@@ -4,6 +4,13 @@ require "action_view"
 require_relative "brb/version"
 
 module BRB
+  singleton_class.attr_accessor :logger
+  @logger = Logger.new "/dev/null"
+
+  def self.debug
+    @logger = Logger.new STDOUT
+  end
+
   # Here's BRB with preprocessing sigils. Sigils aim to make actions common in an HTML context easier to write.
   # At template compile time the sigils are `gsub`'ed into their replacements.
   #
@@ -62,7 +69,7 @@ module BRB
     #    <h1 \= post.options \= class_names(active: post.active?) data-controller="title"></h1> ->
     #    <h1 aria-labelledby="title" class="active"data-controller="title"></h1>
     def initialize(input, ...)
-      puts input
+      BRB.logger.debug { input }
       # scanner = StringScanner.new(input)
       # while string = scanner.scan_until(/\\/)
       #   binding.irb
@@ -73,16 +80,16 @@ module BRB
       # end
 
       if BRB::Sigils.gsub!(input)
-        puts ["sigils", input] unless input.include?("clobbering")
+        BRB.logger.debug { ["sigils", input] }
       end
 
       if input.gsub!(/^\\\r?\n(.*?)^\\\r?\n/m, "<%\n\\1%>\n")
-        puts ["group", input] unless input.include?("clobbering")
+        BRB.logger.debug { ["group", input] }
       end
 
       # if input.gsub!(/(?<!\/)\\(.*?)(\"?\>|\<\/|[ \t]*\r?\n)/, '<%\1 %>\2')
       if input.gsub!(/(?<!\/)\\(.*?)(?=\n|"? \\|"?>|<\/|(?<!\/)\\|[a-z-]+=)/, '<%\1 %>')
-        puts ["line", input] unless input.include?("clobbering")
+        BRB.logger.debug { ["line", input] }
       end
       super
     end

@@ -6,3 +6,4 @@ require "brb"
 require "minitest/autorun"
 
 BRB.enable
+BRB.debug if ENV["DEBUG"]
