@@ -18,6 +18,8 @@ Which gets translated into the equivalent ERB:
 
 ## Installation
 
+Bundle BRB and call `BRB.enable` during your Rails app boot to use it.
+
 Install the gem and add to the application's Gemfile by executing:
 
     $ bundle add UPDATE_WITH_YOUR_GEM_NAME_PRIOR_TO_RELEASE_TO_RUBYGEMS_ORG
