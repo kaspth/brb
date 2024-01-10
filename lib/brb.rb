@@ -37,7 +37,7 @@ module BRB
     @values = {}
 
     def self.gsub!(source)
-      source.gsub!(/\\(#{@values.keys.join("|")})=?(?:(\.\w+)+|\((.*?)\))/) { p $1, $2, $3; @values[$1].sub('\1', $2 || $3) }
+      source.gsub!(/\\(#{@values.keys.join("|")})=?(?: ?([ \.\w]+)|\((.*?)\))/) { p [$1, $2, $3]; @values[$1].sub('\1', $2 || $3) }
     end
 
     def self.register(key, replacer)
