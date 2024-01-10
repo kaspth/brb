@@ -109,7 +109,7 @@ module BRB
         BRB.logger.debug { ["print", input] }
       end
 
-      if input.gsub!(/^\\(.*?)\n/, "<%\\1 %>")
+      if input.gsub!(/^\s*?\\(.*?)\n/, "<%\\1 %>")
         BRB.logger.debug { ["line", input] }
       end
 
