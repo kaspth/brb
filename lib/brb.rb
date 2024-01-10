@@ -44,6 +44,7 @@ module BRB
 
     register :p, '<%= \1 %>'
     register :t, '<%= t "\1" %>'
+    register :id, 'id="<%= dom_id(\1) %>"'
     register :class, 'class="<%= class_names(\1) %>"'
     register :attributes, '<%= tag.attributes(\1) %>'
     register :aria, '<%= tag.aria(\1) %>'

@@ -20,12 +20,13 @@ class BRBTest < ActionView::TestCase
   end
 
   test "sigils" do
-    render "sigils", title: "Super"
+    render "sigils", post: Post.new
     assert_equal <<~HTML, rendered
       <span>Super</span>
+      id="post_1"
       class="active"
-      data-controller="list" data-action="order"
       aria-describedby="post_1"
+      data-controller="list" data-action="order"
     HTML
   end
 end
