@@ -21,10 +21,12 @@ module BRB
   #
   # Examples:
   #
+  #   \p(post.options) -> <%= post.options %>
+  #   \id(post) -> id=<%= dom_id(post) %>
   #   \class(active: post.active?) -> class="<%= class_names(active: post.active?) %>"
   #   \attributes(post.options) -> <%= tag.attributes(post.options) %>
-  #   \p(post.options) -> <%= tag.attributes(post.options) %>
-  #   \data(post.data) -> <%= tag.attributes(data: post.data) %>
+  #   \data(controller: :list) -> <%= tag.data(controller: :list) %>
+  #   \aria(describedby: :post_1) -> <%= tag.aria(describedby: :post_1) %>
   #   \lorem -> Lorem ipsum dolor sit amet…
   #
   # There's also a `t` sigil, but that's a little more involved since there's some extra things to condense:
