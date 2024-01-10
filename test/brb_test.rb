@@ -15,8 +15,9 @@ class BRBTest < ActionView::TestCase
   end
 
   test "sigils" do
-    render "sigils"
+    render "sigils", title: "Super"
     assert_equal <<~HTML, rendered
+      <span>Super</span>
       class="active"
       data-controller="list" data-action="order"
     HTML
