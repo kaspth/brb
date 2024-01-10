@@ -20,6 +20,7 @@ class BRBTest < ActionView::TestCase
       <span>Super</span>
       class="active"
       data-controller="list" data-action="order"
+      aria-describedby="post_1"
     HTML
   end
 end
