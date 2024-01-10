@@ -27,6 +27,10 @@ class BRBTest < ActionView::TestCase
       class="active"
       aria-describedby="post_1"
       data-controller="list" data-action="order"
+
+      <span class="translation_missing" title="translation missing: en._sigils.message">Message</span>
+      <span class="translation_missing" title="translation missing: en.fully.qualified.message">Message</span>
+      <span class="translation_missing" title="translation missing: en.Some bare words">Some Bare Words</span>
     HTML
   end
 
