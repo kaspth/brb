@@ -13,4 +13,12 @@ class BRBTest < ActionView::TestCase
     render "basic", titles: [1,2,3]
     assert_equal "  <h1>1</h1>\n  <h1>2</h1>\n  <h1>3</h1>\n", rendered
   end
+
+  test "sigils" do
+    render "sigils"
+    assert_equal <<~HTML, rendered
+      class="active"
+      data-controller="list" data-action="order"
+    HTML
+  end
 end
