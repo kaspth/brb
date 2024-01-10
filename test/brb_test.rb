@@ -15,8 +15,8 @@ class BRBTest < ActionView::TestCase
   end
 
   test "basic render" do
-    render "basic", titles: [1,2,3]
-    assert_equal "  1\n  <h1>1</h1>\n  2\n  <h1>2</h1>\n  3\n  <h1>3</h1>\n", rendered
+    render "basic", titles: [1,2]
+    assert_equal "  <h1>1</h1><span>1</span>1\n  <h1>2</h1><span>2</span>2\n", rendered
   end
 
   test "sigils" do
