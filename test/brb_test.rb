@@ -29,4 +29,13 @@ class BRBTest < ActionView::TestCase
       data-controller="list" data-action="order"
     HTML
   end
+
+  test "matter" do
+    render "matter"
+    assert_equal <<~HTML, rendered
+
+    <h1></h1>
+
+    HTML
+  end
 end

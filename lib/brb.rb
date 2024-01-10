@@ -85,9 +85,10 @@ module BRB
         BRB.logger.debug { ["sigils", input] }
       end
 
-      if input.gsub!(/^\\\r?\n(.*?)^\\\r?\n/m, "<%\n\\1%>\n")
-        BRB.logger.debug { ["group", input] }
-      end
+      frontmatter = $1 if input.sub! /\A(.*?)~~~\n/m, ""
+      backmatter  = $1 if input.sub! /~~~\n(.*?)\z/m, ""
+      BRB.logger.debug { ["frontmatter", frontmatter] }
+      BRB.logger.debug { ["backmatter", backmatter] }
 
       # if input.gsub!(/(?<!\/)\\(.*?)(\"?\>|\<\/|[ \t]*\r?\n)/, '<%\1 %>\2')
       if input.gsub!(/(?<!\/)\\(.*?)(?=\n|"? \\|"?>|<\/|(?<!\/)\\|[a-z-]+=)/, '<%\1 %>')
