@@ -56,20 +56,31 @@ module BRB
 
   class Erubi < ::ActionView::Template::Handlers::ERB::Erubi
     # DEFAULT_REGEXP = /<%(={1,2}|-|\#|%)?(.*?)([-=])?%>([ \t]*\r?\n)?/m
-    # DEFAULT_REGEXP = /<%(={1,2}|-|\#|%)?(.*?)([-=])?%>([ \t]*\r?\n)?/m
 
     # BRB aims to be a simpler syntax, but still a superset of ERB, that's aware of the context we're in: HTML.
     #
     # We're replacing <% %>, <%= %>, and <%# %> with \, \= and \# — these are self-terminating expressions.
     #
-    # We recognize these contexts and convert them to their terminated ERB equivalent:
+    # So this ERB:
     #
-    # 1. A plain Ruby line: \puts "yo" -> <%puts "yo" %>
-    # 2. Within a tag: <h1>\= post.title</h1> -> <h1><%= post.title %></h1>
-    # 3. Within attributes at the end: <h1 \= post.options></h1> -> <h1 aria-labelledby="title"></h1>
-    # 4. Within attributes:
-    #    <h1 \= post.options \= class_names(active: post.active?) data-controller="title"></h1> ->
-    #    <h1 aria-labelledby="title" class="active"data-controller="title"></h1>
+    #   <%# Some comment. %>
+    #   <% posts.each do |post| %>
+    #     <h1><%= post.title %></h1>
+    #   <% end %>
+    #
+    # Can be this in BRB:
+    #
+    #   \# Some comment.
+    #   \posts.each do |post|
+    #     <h1>\= post.title</h1>
+    #   \end
+    #
+    # Note: you can also do `\ posts.each` and `\ end`, it just feels a little nicer to nestle.
+    #
+    # We recognize every line starting with \ or \# as pure Ruby lines so we terminate on \n and convert to `<% %>`.
+    # Same goes for \= except we also terminate on `</`, and then convert to `<%= %>`.
+    #
+    # Use `\p(post.title)` for multiple statements on the same line or to otherwise disambiguate statements.
     def initialize(input, ...)
       BRB.logger.debug { input }
       # scanner = StringScanner.new(input)
@@ -90,10 +101,14 @@ module BRB
       BRB.logger.debug { ["frontmatter", frontmatter] }
       BRB.logger.debug { ["backmatter", backmatter] }
 
-      # if input.gsub!(/(?<!\/)\\(.*?)(\"?\>|\<\/|[ \t]*\r?\n)/, '<%\1 %>\2')
-      if input.gsub!(/(?<!\/)\\(.*?)(?=\n|"? \\|"?>|<\/|(?<!\/)\\|[a-z-]+=)/, '<%\1 %>')
+      if input.gsub!(/\\=(.*?)(?=\n|<\/)/, "<%=\\1%>")
+        BRB.logger.debug { ["print", input] }
+      end
+
+      if input.gsub!(/^\\(.*?)\n/, "<%\\1 %>")
         BRB.logger.debug { ["line", input] }
       end
+
       super
     end
   end
