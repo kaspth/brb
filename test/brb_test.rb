@@ -5,6 +5,11 @@ require "test_helper"
 class BRBTest < ActionView::TestCase
   TestController.prepend_view_path "./test/partials"
 
+  class ActionView::Helpers::TagHelper::TagBuilder
+    def aria(**options) = attributes(aria: options)
+    def data(**options) = attributes(data: options)
+  end
+
   test "version number" do
     refute_nil ::BRB::VERSION
   end
