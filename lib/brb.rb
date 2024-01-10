@@ -31,13 +31,17 @@ module BRB
   #
   # There's also a `t` sigil, but that's a little more involved since there's some extra things to condense:
   #
-  #   \t.message -> <%= t ".message" %>
+  #   \t .message -> <%= t ".message" %>
+  #   \t fully.qualified.message -> <%= t "fully.qualified.message" %>
   #   \t Some bare words -> <%= t "Some bare words" %> # Assumes we're using a gettext I18n backend, coming later!
   module Sigils
     @values = {}
 
     def self.gsub!(source)
-      source.gsub!(/\\(#{@values.keys.join("|")})=?(?: ?([ \.\w]+)|\((.*?)\))/) { p [$1, $2, $3]; @values[$1].sub('\1', $2 || $3) }
+      source.gsub!(/\\(#{@values.keys.join("|")})(?: ([ \.\w]+)|\((.*?)\))/) do
+        BRB.logger.debug { [$1, $2, $3] }
+        @values[$1].sub('\1', $2 || $3)
+      end
     end
 
     def self.register(key, replacer)
@@ -94,9 +98,7 @@ module BRB
       #   p string
       # end
 
-      if BRB::Sigils.gsub!(input)
-        BRB.logger.debug { ["sigils", input] }
-      end
+      BRB::Sigils.gsub!(input)
 
       frontmatter = $1 if input.sub! /\A(.*?)~~~\n/m, ""
       backmatter  = $1 if input.sub! /~~~\n(.*?)\z/m, ""
