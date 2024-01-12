@@ -99,25 +99,25 @@ module BRB
       input = +""
 
       until @scanner.eos?
+        # debugger
         case @mode
         in :start
           if scan = @scanner.scan_until(/(?=\\)/)
-            @scanner.getch
-            input << scan << "<%"
+            input << scan
+            @scanner.skip(/\\/)
             @mode = :open
           else
             input << @scanner.rest
             @scanner.terminate
           end
         in :open
-          if @scanner.check(/\=/)
-            if scan = @scanner.scan_until(/\=.*?(?=<\/|\r?\n)/)
-              input << scan << " %>"
-            end
-          else
-            if @scanner.scan_until(/(.*?)(\r?\n)/)
-              input << @scanner[1] << "%>" << @scanner[2]
-            end
+          case
+          when @scanner.scan(/\#/) then @scanner.scan_until(/\r?\n/)
+          when @scanner.scan(/\=/)
+            input << "<%=" << @scanner.scan_until(/(?=<\/|\r?\n)/) << " %>"
+          # when @scanner.scan(/#{Sigils.names.join("|")}\(/)
+          when @scanner.scan_until(/(.*)(\r?\n)/)
+            input << "<%" << @scanner[1] << "%>" << @scanner[2]
           end
 
           reset
