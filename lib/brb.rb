@@ -101,7 +101,7 @@ module BRB
       until @scanner.eos?
         case @mode
         in :start
-          if scan = @scanner.scan_until(/(?=\\[^=])/)
+          if scan = @scanner.scan_until(/(?=\\)/)
             @scanner.getch
             input << scan << "<%"
             @mode = :open
@@ -110,9 +110,16 @@ module BRB
             @scanner.terminate
           end
         in :open
-          if @scanner.scan_until(/(.*?)(\r?\n)/)
-            input << @scanner[1] << "%>" << @scanner[2]
+          if @scanner.check(/\=/)
+            if scan = @scanner.scan_until(/\=.*?(?=<\/|\r?\n)/)
+              input << scan << " %>"
+            end
+          else
+            if @scanner.scan_until(/(.*?)(\r?\n)/)
+              input << @scanner[1] << "%>" << @scanner[2]
+            end
           end
+
           reset
 
           # match = @scanner.scan_until(/#|=|#{Sigils.names.join("\\b|")}|\n/)
@@ -131,10 +138,6 @@ module BRB
       backmatter  = $1 if input.sub! /~~~\n(.*?)\z/m, ""
       BRB.logger.debug { ["frontmatter", frontmatter] }
       BRB.logger.debug { ["backmatter", backmatter] }
-
-      if input.gsub!(/\\=(.*?)(?=\n|<\/)/, "<%=\\1%>")
-        BRB.logger.debug { ["print", input] }
-      end
 
       super
     end
