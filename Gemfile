@@ -10,3 +10,6 @@ gem "rake", "~> 13.0"
 gem "minitest", "~> 5.0"
 
 gem "activemodel"
+
+gem "irb"
+gem "debug"
