@@ -91,7 +91,7 @@ module BRB
     def initialize(input, ...)
       BRB.logger.debug { input }
 
-      BRB::Sigils.gsub!(input)
+      # BRB::Sigils.gsub!(input)
 
       @scanner = StringScanner.new(input)
       reset
@@ -115,7 +115,10 @@ module BRB
           when @scanner.scan(/\#/) then @scanner.scan_until(/\r?\n/)
           when @scanner.scan(/\=/)
             input << "<%=" << @scanner.scan_until(/(?=<\/|\r?\n)/) << " %>"
-          # when @scanner.scan(/#{Sigils.names.join("|")}\(/)
+          when @scanner.scan(/t(\.[\.\w]+)/)
+            input << Sigils.instance_variable_get(:@values)["t"].sub("\\1", @scanner[1])
+          when @scanner.scan(/(#{Sigils.names.join("|")})\(/)
+            input << Sigils.instance_variable_get(:@values)[@scanner[1]].sub("\\1", @scanner.scan_until(/\)/).chomp(")"))
           when @scanner.scan_until(/(.*)(\r?\n)/)
             input << "<%" << @scanner[1] << "%>" << @scanner[2]
           end
