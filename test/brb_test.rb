@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 require "test_helper"
-require "irb"
-require "debug"
 
 class BRBTest < ActionView::TestCase
   TestController.prepend_view_path "./test/partials"

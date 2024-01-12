@@ -3,6 +3,8 @@
 $LOAD_PATH.unshift File.expand_path("../lib", __dir__)
 require "brb"
 
+require "irb"
+require "debug"
 require "active_model"
 require "minitest/autorun"
 
