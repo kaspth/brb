@@ -38,7 +38,7 @@ module BRB
     @values = {}
 
     def self.gsub!(source)
-      source.gsub!(/\\(#{@values.keys.join("|")})(?:(\.[\.\w]+)|\((.*?)\))/) do
+      source.gsub!(/\\(#{@values.keys.join("|")})(?:\((.*?)\)|(\.[\.\w]+))/) do
         BRB.logger.debug { [$1, $2, $3] }
         @values[$1].sub('\1', $2 || $3)
       end
