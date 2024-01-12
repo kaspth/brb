@@ -35,6 +35,7 @@ module BRB
   #   \t(fully.qualified.message) -> <%= t "fully.qualified.message" %>
   #   \t(Some bare words) -> <%= t "Some bare words" %> # Assumes we're using a gettext I18n backend, coming later!
   module Sigils
+    def self.names = @values.keys
     @values = {}
 
     def self.gsub!(source)
@@ -89,16 +90,42 @@ module BRB
     # Use `\p(post.title)` for multiple statements on the same line or to otherwise disambiguate statements.
     def initialize(input, ...)
       BRB.logger.debug { input }
-      # scanner = StringScanner.new(input)
-      # while string = scanner.scan_until(/\\/)
-      #   binding.irb
-      #   if scanner.bol? && scanner.check(/\n/)
-      #     puts "YO"
-      #   end
-      #   p string
-      # end
 
       BRB::Sigils.gsub!(input)
+
+      @scanner = StringScanner.new(input)
+      reset
+
+      input = +""
+
+      until @scanner.eos?
+        case @mode
+        in :start
+          if scan = @scanner.scan_until(/(?=\\[^=])/)
+            @scanner.getch
+            input << scan << "<%"
+            @mode = :open
+          else
+            input << @scanner.rest
+            @scanner.terminate
+          end
+        in :open
+          if @scanner.scan_until(/(.*?)(\r?\n)/)
+            input << @scanner[1] << "%>" << @scanner[2]
+          end
+          reset
+
+          # match = @scanner.scan_until(/#|=|#{Sigils.names.join("\\b|")}|\n/)
+          # case match.last
+          # in "\n" then reset
+          # in "#"  then @scanner.scan_until("\n") and reset
+          # in "="  then @writing = true
+          # else
+          #   source = @scanner.scan_until Sigils.regex(match)
+          #   writing? ? "<%= #{source} %>" : "<% #{source} %>"
+          # end
+        end
+      end
 
       frontmatter = $1 if input.sub! /\A(.*?)~~~\n/m, ""
       backmatter  = $1 if input.sub! /~~~\n(.*?)\z/m, ""
@@ -109,11 +136,11 @@ module BRB
         BRB.logger.debug { ["print", input] }
       end
 
-      if input.gsub!(/^\s*?\\(.*?)\n/, "<%\\1 %>")
-        BRB.logger.debug { ["line", input] }
-      end
-
       super
+    end
+
+    private def reset
+      @mode, @writing = :start, false
     end
   end
 

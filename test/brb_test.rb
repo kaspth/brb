@@ -21,6 +21,7 @@ class BRBTest < ActionView::TestCase
     assert_equal <<~HTML, rendered
         <h1>1</h1><span>1</span>1
         <h1>2</h1><span>2</span>2
+
       <div>
       YO</div>
     HTML
