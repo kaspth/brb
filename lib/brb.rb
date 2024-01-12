@@ -38,11 +38,8 @@ module BRB
     def self.names = @values.keys
     @values = {}
 
-    def self.gsub!(source)
-      source.gsub!(/\\(#{@values.keys.join("|")})(?:\((.*?)\)|(\.[\.\w]+))/) do
-        BRB.logger.debug { [$1, $2, $3] }
-        @values[$1].sub('\1', $2 || $3)
-      end
+    def self.replace(key, value)
+      @values.fetch(key).sub "\\1", value
     end
 
     def self.register(key, replacer)
@@ -91,8 +88,6 @@ module BRB
     def initialize(input, ...)
       BRB.logger.debug { input }
 
-      # BRB::Sigils.gsub!(input)
-
       @scanner = StringScanner.new(input)
       reset
 
@@ -116,9 +111,9 @@ module BRB
           when @scanner.scan(/\=/)
             input << "<%=" << @scanner.scan_until(/(?=<\/|\r?\n)/) << " %>"
           when @scanner.scan(/t(\.[\.\w]+)/)
-            input << Sigils.instance_variable_get(:@values)["t"].sub("\\1", @scanner[1])
+            input << Sigils.replace("t", @scanner[1])
           when @scanner.scan(/(#{Sigils.names.join("|")})\(/)
-            input << Sigils.instance_variable_get(:@values)[@scanner[1]].sub("\\1", @scanner.scan_until(/\)/).chomp(")"))
+            input << Sigils.replace(@scanner[1], @scanner.scan_until(/\)/).chomp(")"))
           when @scanner.scan_until(/(.*)(\r?\n)/)
             input << "<%" << @scanner[1] << "%>" << @scanner[2]
           end
