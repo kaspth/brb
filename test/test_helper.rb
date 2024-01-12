@@ -8,6 +8,12 @@ require "debug"
 require "active_model"
 require "minitest/autorun"
 
+Minitest.backtrace_filter = Class.new do
+  def filter(backtrace)
+    backtrace.grep_v /gems\/(minitest|activesupport|actionview)/
+  end
+end.new
+
 BRB.enable
 BRB.debug if ENV["DEBUG"]
 
