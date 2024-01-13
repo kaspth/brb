@@ -6,10 +6,9 @@ require_relative "brb/version"
 module BRB
   singleton_class.attr_accessor :logger
   @logger = Logger.new "/dev/null"
+  def self.debug = @logger = Logger.new(STDOUT)
 
-  def self.debug
-    @logger = Logger.new STDOUT
-  end
+  def self.enable = ActionView::Template::Handlers::ERB.erb_implementation = BRB::Erubi
 
   # Here's BRB with preprocessing sigils. Sigils aim to make actions common in an HTML context easier to write.
   # At template compile time the sigils are `gsub`'ed into their replacements.
@@ -120,9 +119,5 @@ module BRB
 
       super
     end
-  end
-
-  def self.enable
-    ActionView::Template::Handlers::ERB.erb_implementation = BRB::Erubi
   end
 end
