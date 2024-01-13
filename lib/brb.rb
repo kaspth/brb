@@ -13,7 +13,7 @@ module BRB
   @logger = Logger.new "/dev/null"
   def self.debug = @logger = Logger.new(STDOUT)
 
-  def self.enable = ActionView::Template::Handlers::ERB.erb_implementation = BRB::Erubi
+  def self.enable = ActionView::Template::Handlers::ERB.erb_implementation = BRB::Parser
 
   module Sigil
     def self.names = @values.keys
@@ -58,7 +58,7 @@ module BRB
     end_of_lorem
   end
 
-  class Erubi < ::ActionView::Template::Handlers::ERB::Erubi
+  class Parser < ::ActionView::Template::Handlers::ERB::Erubi
     def initialize(input, ...)
       frontmatter = $1 if input.sub! /\A(.*?)~~~\n/m, ""
       backmatter  = $1 if input.sub! /~~~\n(.*?)\z/m, ""
