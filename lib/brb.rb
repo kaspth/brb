@@ -4,6 +4,11 @@ require "action_view"
 require_relative "brb/version"
 
 module BRB
+  class ::ActionView::Helpers::TagHelper::TagBuilder
+    def aria(**options) = attributes(aria: options)
+    def data(**options) = attributes(data: options)
+  end
+
   singleton_class.attr_accessor :logger
   @logger = Logger.new "/dev/null"
   def self.debug = @logger = Logger.new(STDOUT)
