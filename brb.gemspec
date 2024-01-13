@@ -3,12 +3,12 @@
 require_relative "lib/brb/version"
 
 Gem::Specification.new do |spec|
-  spec.name = "brb"
+  spec.name = "brb-templates"
   spec.version = BRB::VERSION
   spec.authors = ["Kasper Timm Hansen"]
   spec.email = ["hey@kaspth.com"]
 
-  spec.summary = "BRB is a backslashed Ruby template system, to let you be-right-back to ERB"
+  spec.summary = "BRB is backslashed Ruby, a template system that lets you be-right-back to ERB."
   spec.homepage = "https://github.com/kaspth/brb"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.0.0"
