@@ -34,7 +34,7 @@ module BRB
   #   \t.message -> <%= t ".message" %>
   #   \t(fully.qualified.message) -> <%= t "fully.qualified.message" %>
   #   \t(Some bare words) -> <%= t "Some bare words" %> # Assumes we're using a gettext I18n backend, coming later!
-  module Sigils
+  module Sigil
     def self.names = @values.keys
     @values = {}
 
@@ -111,9 +111,9 @@ module BRB
           when @scanner.scan(/\=/)
             input << "<%=" << @scanner.scan_until(/(?=<\/|\r?\n)/) << " %>"
           when @scanner.scan(/t(\.[\.\w]+)/)
-            input << Sigils.replace("t", @scanner[1])
-          when @scanner.scan(/(#{Sigils.names.join("|")})\(/)
-            input << Sigils.replace(@scanner[1], @scanner.scan_until(/\)/).chomp(")"))
+            input << Sigil.replace("t", @scanner[1])
+          when @scanner.scan(/(#{Sigil.names.join("|")})\(/)
+            input << Sigil.replace(@scanner[1], @scanner.scan_until(/\)/).chomp(")"))
           when @scanner.scan_until(/(.*)(\r?\n)/)
             input << "<%" << @scanner[1] << "%>" << @scanner[2]
           end
