@@ -90,8 +90,6 @@ module BRB
     #
     # Use `\p(post.title)` for multiple statements on the same line or to otherwise disambiguate statements.
     def initialize(input, ...)
-      BRB.logger.debug { input }
-
       frontmatter = $1 if input.sub! /\A(.*?)~~~\n/m, ""
       backmatter  = $1 if input.sub! /~~~\n(.*?)\z/m, ""
 
