@@ -65,8 +65,6 @@ module BRB
   end
 
   class Erubi < ::ActionView::Template::Handlers::ERB::Erubi
-    # DEFAULT_REGEXP = /<%(={1,2}|-|\#|%)?(.*?)([-=])?%>([ \t]*\r?\n)?/m
-
     # BRB aims to be a simpler syntax, but still a superset of ERB, that's aware of the context we're in: HTML.
     #
     # We're replacing <% %>, <%= %>, and <%# %> with \, \= and \# — these are self-terminating expressions.
