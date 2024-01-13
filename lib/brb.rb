@@ -92,6 +92,9 @@ module BRB
     def initialize(input, ...)
       BRB.logger.debug { input }
 
+      frontmatter = $1 if input.sub! /\A(.*?)~~~\n/m, ""
+      backmatter  = $1 if input.sub! /~~~\n(.*?)\z/m, ""
+
       @scanner = StringScanner.new(input)
       input    = +""
       @mode    = :start
@@ -116,11 +119,6 @@ module BRB
 
         @mode = :start
       end until @scanner.eos?
-
-      frontmatter = $1 if input.sub! /\A(.*?)~~~\n/m, ""
-      backmatter  = $1 if input.sub! /~~~\n(.*?)\z/m, ""
-      BRB.logger.debug { ["frontmatter", frontmatter] }
-      BRB.logger.debug { ["backmatter", backmatter] }
 
       super
     end
