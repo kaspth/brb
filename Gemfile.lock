@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    brb (0.1.0)
+    brb-templates (0.1.0)
       actionview (>= 6.1)
 
 GEM
@@ -95,7 +95,7 @@ PLATFORMS
 DEPENDENCIES
   actionpack (>= 6.1)
   activemodel
-  brb!
+  brb-templates!
   debug
   irb
   minitest (~> 5.0)
