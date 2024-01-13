@@ -39,8 +39,13 @@ module BRB
     @values = {}
 
     def self.replace(scanner, key)
-      (key == "t" && scanner.scan(/(\.[\.\w]+)/)) || scanner.scan(/\((.*?)\)/)
-      @values.fetch(key).sub ":value", scanner[1]
+      @values.fetch(key).then do |template|
+        if (key == "t" && scanner.scan(/(\.[\.\w]+)/)) || scanner.scan(/\((.*?)\)/)
+          template.sub ":value", scanner[1]
+        else
+          template
+        end
+      end
     end
 
     def self.register(key, replacer)

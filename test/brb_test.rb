@@ -38,6 +38,11 @@ class BRBTest < ActionView::TestCase
       <span class="translation_missing" title="translation missing: en.fully.qualified.message">Message</span>
       <span class="translation_missing" title="translation missing: en.Some bare words">Some Bare Words</span>
     HTML
+
+    render inline: <<~BRB
+      \\lorem
+    BRB
+    assert_match(/Lorem ipsum/, rendered)
   end
 
   test "matter" do
