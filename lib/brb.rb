@@ -38,8 +38,9 @@ module BRB
     def self.names = @values.keys
     @values = {}
 
-    def self.replace(key, value)
-      @values.fetch(key).sub "\\1", value
+    def self.replace(scanner, key)
+      (key == "t" && scanner.scan(/(\.[\.\w]+)/)) || scanner.scan(/\((.*?)\)/)
+      @values.fetch(key).sub "\\1", scanner[1]
     end
 
     def self.register(key, replacer)
@@ -105,29 +106,16 @@ module BRB
             @scanner.terminate
           end
         in :open
-          case
-          when @scanner.scan(/\#/) then @scanner.scan_until(/\r?\n/)
-          when @scanner.scan(/\=/)
-            input << "<%=" << @scanner.scan_until(/(?=<\/|\r?\n)/) << " %>"
-          when @scanner.scan(/t(\.[\.\w]+)/)
-            input << Sigil.replace("t", @scanner[1])
-          when @scanner.scan(/(#{Sigil.names.join("|")})\(/)
-            input << Sigil.replace(@scanner[1], @scanner.scan_until(/\)/).chomp(")"))
-          when @scanner.scan_until(/(.*)(\r?\n)/)
-            input << "<%" << @scanner[1] << "%>" << @scanner[2]
+          case token = @scanner.scan(/#|=|#{Sigil.names.join("\\b|")}\b/)
+          when "#" then @scanner.scan_until(/\n/)
+          when "=" then input << "<%=" << @scanner.scan_until(/(?=<\/|\r?\n)/) << " %>"
+          when *Sigil.names
+            input << Sigil.replace(@scanner, token)
+          else
+            @scanner.scan_until(/(?=\r?\n)/)&.then { input << "<% " << _1 << " %>" }
           end
 
           @mode = :start
-
-          # match = @scanner.scan_until(/#|=|#{Sigils.names.join("\\b|")}|\n/)
-          # case match.last
-          # in "\n" then reset
-          # in "#"  then @scanner.scan_until("\n") and reset
-          # in "="  then @writing = true
-          # else
-          #   source = @scanner.scan_until Sigils.regex(match)
-          #   writing? ? "<%= #{source} %>" : "<% #{source} %>"
-          # end
         end
       end
 
