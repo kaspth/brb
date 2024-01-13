@@ -40,6 +40,11 @@ class BRBTest < ActionView::TestCase
     assert_match(/Lorem ipsum/, rendered)
   end
 
+  test "embedded parens" do
+    render inline: "\\p(dom_id(Post.new)) \\p(dom_id(Post.new))"
+    assert_equal "post_1 post_1", rendered
+  end
+
   test "matter" do
     render "matter"
     assert_equal <<~HTML, rendered

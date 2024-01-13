@@ -21,13 +21,26 @@ module BRB
 
     def self.replace(scanner, key)
       @values.fetch(key).then do |template|
-        if (key == "t" && scanner.scan(/(\.[\.\w]+)/)) || scanner.scan(/\((.*?)\)/)
-          template.sub ":value", scanner[1]
+        case
+        when key == "t" && scanner.scan(/\.[\.\w]+/) then template.sub ":value", scanner.matched
+        when scanner.check(/\(/) then template.sub ":value", scan_arguments(scanner)
         else
           template
         end
       end
     end
+
+    def self.scan_arguments(scanner)
+      arguments, open_parens = +"", 0
+
+      begin
+        arguments << scanner.scan_until(/\(|\)/)
+        open_parens += arguments.last == "(" ? 1 : -1
+      end until open_parens.zero?
+
+      arguments[1..-2]
+    end
+
 
     def self.register(key, replacer)
       @values[key.to_s] = replacer
