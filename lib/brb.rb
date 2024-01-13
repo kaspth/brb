@@ -40,20 +40,20 @@ module BRB
 
     def self.replace(scanner, key)
       (key == "t" && scanner.scan(/(\.[\.\w]+)/)) || scanner.scan(/\((.*?)\)/)
-      @values.fetch(key).sub "\\1", scanner[1]
+      @values.fetch(key).sub ":value", scanner[1]
     end
 
     def self.register(key, replacer)
       @values[key.to_s] = replacer
     end
 
-    register :p, '<%= \1 %>'
-    register :t, '<%= t "\1" %>'
-    register :id, 'id="<%= dom_id(\1) %>"'
-    register :class, 'class="<%= class_names(\1) %>"'
-    register :attributes, '<%= tag.attributes(\1) %>'
-    register :aria, '<%= tag.aria(\1) %>'
-    register :data, '<%= tag.data(\1) %>'
+    register :p, '<%= :value %>'
+    register :t, '<%= t ":value" %>'
+    register :id, 'id="<%= dom_id(:value) %>"'
+    register :class, 'class="<%= class_names(:value) %>"'
+    register :attributes, '<%= tag.attributes(:value) %>'
+    register :aria, '<%= tag.aria(:value) %>'
+    register :data, '<%= tag.data(:value) %>'
     register :lorem, <<~end_of_lorem
       Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
     end_of_lorem
