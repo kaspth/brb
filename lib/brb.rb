@@ -107,10 +107,9 @@ module BRB
         end
       else
         case token = @scanner.scan(/#|=|#{Sigil.names.join("\\b|")}\b/)
-        when "#" then @scanner.scan_until(/\n/)
-        when "=" then input << "<%=" << @scanner.scan_until(/(?=<\/|\r?\n)/) << " %>"
-        when *Sigil.names
-          input << Sigil.replace(@scanner, token)
+        when "#"          then @scanner.scan_until(/\n/)
+        when *Sigil.names then input << Sigil.replace(@scanner, token)
+        when "="          then input << "<%=" << @scanner.scan_until(/(?=<\/|\r?\n)/) << " %>"
         else
           @scanner.scan_until(/(?=\r?\n)/)&.then { input << "<% " << _1 << " %>" }
         end
