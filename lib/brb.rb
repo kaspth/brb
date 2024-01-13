@@ -93,34 +93,30 @@ module BRB
       BRB.logger.debug { input }
 
       @scanner = StringScanner.new(input)
-      @mode = :start
+      input    = +""
+      @mode    = :start
 
-      input = +""
-
-      until @scanner.eos?
-        case @mode
-        in :start
-          if scan = @scanner.scan_until(/(?=\\)/)
-            input << scan
-            @scanner.skip(/\\/)
-            @mode = :open
-          else
-            input << @scanner.rest
-            @scanner.terminate
-          end
-        in :open
-          case token = @scanner.scan(/#|=|#{Sigil.names.join("\\b|")}\b/)
-          when "#" then @scanner.scan_until(/\n/)
-          when "=" then input << "<%=" << @scanner.scan_until(/(?=<\/|\r?\n)/) << " %>"
-          when *Sigil.names
-            input << Sigil.replace(@scanner, token)
-          else
-            @scanner.scan_until(/(?=\r?\n)/)&.then { input << "<% " << _1 << " %>" }
-          end
-
-          @mode = :start
+      if @mode == :start
+        if scan = @scanner.scan_until(/(?=\\)/)
+          input << scan
+          @scanner.skip(/\\/)
+          @mode = :open
+        else
+          input << @scanner.rest
+          @scanner.terminate
         end
-      end
+      else
+        case token = @scanner.scan(/#|=|#{Sigil.names.join("\\b|")}\b/)
+        when "#" then @scanner.scan_until(/\n/)
+        when "=" then input << "<%=" << @scanner.scan_until(/(?=<\/|\r?\n)/) << " %>"
+        when *Sigil.names
+          input << Sigil.replace(@scanner, token)
+        else
+          @scanner.scan_until(/(?=\r?\n)/)&.then { input << "<% " << _1 << " %>" }
+        end
+
+        @mode = :start
+      end until @scanner.eos?
 
       frontmatter = $1 if input.sub! /\A(.*?)~~~\n/m, ""
       backmatter  = $1 if input.sub! /~~~\n(.*?)\z/m, ""
