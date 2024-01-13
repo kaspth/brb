@@ -89,12 +89,11 @@ module BRB
       BRB.logger.debug { input }
 
       @scanner = StringScanner.new(input)
-      reset
+      @mode = :start
 
       input = +""
 
       until @scanner.eos?
-        # debugger
         case @mode
         in :start
           if scan = @scanner.scan_until(/(?=\\)/)
@@ -118,7 +117,7 @@ module BRB
             input << "<%" << @scanner[1] << "%>" << @scanner[2]
           end
 
-          reset
+          @mode = :start
 
           # match = @scanner.scan_until(/#|=|#{Sigils.names.join("\\b|")}|\n/)
           # case match.last
@@ -138,10 +137,6 @@ module BRB
       BRB.logger.debug { ["backmatter", backmatter] }
 
       super
-    end
-
-    private def reset
-      @mode, @writing = :start, false
     end
   end
 
